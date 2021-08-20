@@ -9,7 +9,7 @@ require (
 	github.com/go-chi/render v1.0.1
 	github.com/gofrs/uuid v4.0.0+incompatible
 	github.com/gorilla/websocket v1.4.2
-	github.com/sagernet/wireguard-tun v0.0.0-20210818104535-089b1f142051
+	github.com/sagernet/wireguard-tun v0.0.0-20210820015719-40320c576e0e
 	github.com/sirupsen/logrus v1.8.1
 	github.com/stretchr/testify v1.7.0
 	go.uber.org/atomic v1.9.0
