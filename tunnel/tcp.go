@@ -1,21 +1,15 @@
 package tunnel
 
 import (
-	"io"
-	"net"
-	"sync"
-	"time"
-
 	"github.com/xjasonlyu/tun2socks/common/pool"
 	M "github.com/xjasonlyu/tun2socks/constant"
 	"github.com/xjasonlyu/tun2socks/core"
 	"github.com/xjasonlyu/tun2socks/log"
 	"github.com/xjasonlyu/tun2socks/proxy"
 	"github.com/xjasonlyu/tun2socks/tunnel/statistic"
-)
-
-const (
-	tcpWaitTimeout = 5 * time.Second
+	"io"
+	"net"
+	"sync"
 )
 
 func newTCPTracker(conn net.Conn, metadata *M.Metadata) net.Conn {
@@ -62,13 +56,11 @@ func relay(left, right net.Conn) {
 	go func() {
 		defer wg.Done()
 		_ = copyBuffer(right, left) /* ignore error */
-		right.SetReadDeadline(time.Now().Add(tcpWaitTimeout))
 	}()
 
 	go func() {
 		defer wg.Done()
 		_ = copyBuffer(left, right) /* ignore error */
-		left.SetReadDeadline(time.Now().Add(tcpWaitTimeout))
 	}()
 
 	wg.Wait()

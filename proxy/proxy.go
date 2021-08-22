@@ -3,15 +3,9 @@ package proxy
 
 import (
 	"context"
-	"net"
-	"time"
-
 	M "github.com/xjasonlyu/tun2socks/constant"
 	"github.com/xjasonlyu/tun2socks/proxy/proto"
-)
-
-const (
-	tcpConnectTimeout = 5 * time.Second
+	"net"
 )
 
 var (
@@ -36,9 +30,7 @@ func SetDialer(d Dialer) {
 
 // Dial uses default Dialer to dial TCP.
 func Dial(metadata *M.Metadata) (net.Conn, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), tcpConnectTimeout)
-	defer cancel()
-	return _defaultDialer.DialContext(ctx, metadata)
+	return _defaultDialer.DialContext(context.Background(), metadata)
 }
 
 // DialContext uses default Dialer to dial TCP with context.
