@@ -2,10 +2,6 @@ package tunnel
 
 import (
 	"errors"
-	"net"
-	"os"
-	"time"
-
 	"github.com/xjasonlyu/tun2socks/common/pool"
 	"github.com/xjasonlyu/tun2socks/component/nat"
 	M "github.com/xjasonlyu/tun2socks/constant"
@@ -13,6 +9,8 @@ import (
 	"github.com/xjasonlyu/tun2socks/log"
 	"github.com/xjasonlyu/tun2socks/proxy"
 	"github.com/xjasonlyu/tun2socks/tunnel/statistic"
+	"net"
+	"os"
 )
 
 var (
@@ -22,11 +20,9 @@ var (
 
 	// _udpSessionTimeout is the default timeout for
 	// each UDP session.
-	_udpSessionTimeout = 60 * time.Second
 )
 
 func SetUDPTimeout(v int) {
-	_udpSessionTimeout = time.Duration(v) * time.Second
 }
 
 func newUDPTracker(conn net.PacketConn, metadata *M.Metadata) net.PacketConn {
@@ -115,7 +111,6 @@ func handleUDPToRemote(packet core.UDPPacket, pc net.PacketConn, remote net.Addr
 	if _, err := pc.WriteTo(packet.Data() /* data */, remote); err != nil {
 		log.Warnf("[UDP] write to %s error: %v", remote, err)
 	}
-	pc.SetReadDeadline(time.Now().Add(_udpSessionTimeout)) /* reset timeout */
 
 	log.Infof("[UDP] %s --> %s", packet.RemoteAddr(), remote)
 }
@@ -125,7 +120,6 @@ func handleUDPToLocal(packet core.UDPPacket, pc net.PacketConn) {
 	defer pool.Put(buf)
 
 	for /* just loop */ {
-		pc.SetReadDeadline(time.Now().Add(_udpSessionTimeout))
 		n, from, err := pc.ReadFrom(buf)
 		if err != nil {
 			if !errors.Is(err, os.ErrDeadlineExceeded) /* ignore i/o timeout */ {
