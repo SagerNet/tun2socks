@@ -14,7 +14,7 @@ import (
 
 func parseDevice(s string, mtu uint32) (device.Device, error) {
 	if !strings.Contains(s, "://") {
-		s = tun.Driver + "://" + s /* default driver */
+		s = fmt.Sprintf("%s://%s", tun.Driver /* default driver */, s)
 	}
 
 	u, err := url.Parse(s)
@@ -35,7 +35,7 @@ func parseDevice(s string, mtu uint32) (device.Device, error) {
 
 func parseProxy(s string) (proxy.Proxy, error) {
 	if !strings.Contains(s, "://") {
-		s = proto.Socks5.String() + "://" + s /* default protocol */
+		s = fmt.Sprintf("%s://%s", proto.Socks5 /* default protocol */, s)
 	}
 
 	u, err := url.Parse(s)
@@ -51,11 +51,11 @@ func parseProxy(s string) (proxy.Proxy, error) {
 	case proto.Reject.String():
 		return proxy.NewReject(), nil
 	case proto.HTTP.String():
-		return proxy.NewHTTP(parseAddrUserPass(u))
+		return proxy.NewHTTP(parseHTTP(u))
 	case proto.Socks4.String():
-		return proxy.NewSocks4(parseAddrUser(u))
+		return proxy.NewSocks4(parseSocks4(u))
 	case proto.Socks5.String():
-		return proxy.NewSocks5(parseAddrUserPass(u))
+		return proxy.NewSocks5(parseSocks5(u))
 	case proto.Shadowsocks.String():
 		return proxy.NewShadowsocks(parseShadowsocks(u))
 	default:
@@ -63,14 +63,25 @@ func parseProxy(s string) (proxy.Proxy, error) {
 	}
 }
 
-func parseAddrUser(u *url.URL) (address, username string) {
+func parseHTTP(u *url.URL) (address, username, password string) {
+	address, username = u.Host, u.User.Username()
+	password, _ = u.User.Password()
+	return
+}
+
+func parseSocks4(u *url.URL) (address, username string) {
 	address, username = u.Host, u.User.Username()
 	return
 }
 
-func parseAddrUserPass(u *url.URL) (address, username, password string) {
-	address, username = parseAddrUser(u)
+func parseSocks5(u *url.URL) (address, username, password string) {
+	address, username = u.Host, u.User.Username()
 	password, _ = u.User.Password()
+
+	// Socks5 over UDS
+	if address == "" {
+		address = u.Path
+	}
 	return
 }
 

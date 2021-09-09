@@ -14,11 +14,13 @@ require (
 	github.com/stretchr/testify v1.7.0
 	go.uber.org/atomic v1.9.0
 	golang.org/x/crypto v0.0.0-20210812204632-0ba0e8f03122 // indirect
-	golang.org/x/net v0.0.0-20210805182204-aaa1db679c0d // indirect
-	golang.org/x/sys v0.0.0-20210809222454-d867a43fc93e
+	golang.org/x/net v0.0.0-20210903162142-ad29c8ab022f // indirect
+	golang.org/x/sys v0.0.0-20210903071746-97244b99971b
 	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac
-	gvisor.dev/gvisor v0.0.0-20210821010134-571f7889f5f0
+	gvisor.dev/gvisor v0.0.0
 )
+
+replace gvisor.dev/gvisor v0.0.0 => github.com/sagernet/gvisor v0.0.0-20210909160323-ce37d6df1e92
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
