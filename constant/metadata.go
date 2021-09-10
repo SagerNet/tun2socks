@@ -1,13 +1,9 @@
 package constant
 
 import (
-	"bytes"
-	"encoding/binary"
 	"fmt"
 	"net"
 	"strconv"
-
-	"github.com/xjasonlyu/tun2socks/transport/socks5"
 )
 
 const (
@@ -59,23 +55,6 @@ func (m *Metadata) UDPAddr() *net.UDPAddr {
 		IP:   m.DstIP,
 		Port: int(m.DstPort),
 	}
-}
-
-func (m *Metadata) SerializesSocksAddr() socks5.Addr {
-	var (
-		buf  [][]byte
-		port [2]byte
-	)
-	binary.BigEndian.PutUint16(port[:], m.DstPort)
-
-	if m.DstIP.To4() != nil /* IPv4 */ {
-		aType := socks5.AtypIPv4
-		buf = [][]byte{{aType}, m.DstIP.To4(), port[:]}
-	} else /* IPv6 */ {
-		aType := socks5.AtypIPv6
-		buf = [][]byte{{aType}, m.DstIP.To16(), port[:]}
-	}
-	return bytes.Join(buf, nil)
 }
 
 func (m *Metadata) Network() string {
